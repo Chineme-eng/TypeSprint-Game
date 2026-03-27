@@ -1,0 +1,1408 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KatGames — TypeSprint</title>
+  <meta name="description" content="TypeSprint by KatGames — a fast-paced typing challenge with multiple difficulty levels and 300+ words." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Orbitron:wght@500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg-2:#0d1b2f;
+      --panel:#0f1f36;
+      --panel-2:#132845;
+      --card:#10233d;
+      --card-2:#183458;
+      --text:#f3f7ff;
+      --muted:#9fb3d1;
+      --line:rgba(255,255,255,.08);
+      --line-2:rgba(255,255,255,.14);
+      --cyan:#47d7ff;
+      --violet:#9b6dff;
+      --pink:#ff5fa2;
+      --lime:#9cff57;
+      --gold:#ffca57;
+      --danger:#ff6b6b;
+      --shadow:0 24px 70px rgba(0,0,0,.35);
+      --radius:22px;
+      --radius-sm:14px;
+      --title:'Orbitron', sans-serif;
+      --sans:'Space Grotesk', sans-serif;
+      --mono:'JetBrains Mono', monospace;
+      --max:1180px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(71,215,255,.14), transparent 22%),
+        radial-gradient(circle at top right, rgba(155,109,255,.12), transparent 24%),
+        radial-gradient(circle at bottom center, rgba(255,95,162,.10), transparent 18%),
+        linear-gradient(180deg, var(--bg), #050c18 58%, #040914 100%);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.07;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size:28px 28px;
+      mask-image:linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input{font:inherit}
+
+    .wrap{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:30;
+      backdrop-filter:blur(14px);
+      background:rgba(7,17,31,.72);
+      border-bottom:1px solid var(--line);
+    }
+
+    .topbar-inner{
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .brand-mark{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg, var(--cyan), var(--violet));
+      color:#08111e;
+      font-family:var(--title);
+      font-size:14px;
+      font-weight:800;
+      box-shadow:0 0 0 2px rgba(255,255,255,.08), 0 8px 30px rgba(71,215,255,.25);
+    }
+
+    .brand-copy strong{
+      display:block;
+      font-family:var(--title);
+      letter-spacing:.03em;
+      font-size:15px;
+    }
+
+    .brand-copy span{
+      display:block;
+      font-family:var(--mono);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .top-status{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:.88rem;
+    }
+
+    .shell{
+      padding:28px 0 32px;
+    }
+
+    .screen{
+      display:none;
+      animation:fadeIn .4s ease;
+    }
+
+    .screen.active{
+      display:block;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(10px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    .menu-grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:18px;
+      align-items:stretch;
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(20,40,69,.92), rgba(11,25,44,.92));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.04) 35%, transparent 60%);
+      transform:translateX(-140%);
+      transition:transform .9s ease;
+    }
+
+    .panel:hover::before{
+      transform:translateX(140%);
+    }
+
+    .menu-hero{
+      padding:28px;
+      min-height:560px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:fit-content;
+      padding:10px 13px;
+      border-radius:999px;
+      background:rgba(71,215,255,.09);
+      border:1px solid rgba(71,215,255,.18);
+      color:var(--cyan);
+      font-family:var(--mono);
+      font-size:12px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+
+    h1{
+      margin:18px 0 12px;
+      font-family:var(--title);
+      font-size:clamp(2.8rem, 7vw, 5.3rem);
+      line-height:.92;
+      letter-spacing:.02em;
+      text-transform:uppercase;
+      text-shadow:0 0 22px rgba(71,215,255,.10);
+    }
+
+    .subtitle{
+      font-size:1.05rem;
+      line-height:1.75;
+      color:var(--muted);
+      max-width:56ch;
+      margin:0 0 22px;
+    }
+
+    .menu-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      border-radius:14px;
+      padding:14px 18px;
+      border:1px solid transparent;
+      font-weight:700;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg, var(--cyan), var(--violet));
+      color:#07111f;
+      box-shadow:0 10px 30px rgba(71,215,255,.20);
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-1px) scale(1.01);
+      box-shadow:0 16px 34px rgba(71,215,255,.25);
+    }
+
+    .btn-dark{
+      background:rgba(255,255,255,.04);
+      border-color:var(--line-2);
+      color:var(--text);
+    }
+
+    .btn-dark:hover{
+      background:rgba(255,255,255,.08);
+      transform:translateY(-1px);
+    }
+
+    .btn-danger{
+      background:rgba(255,107,107,.10);
+      color:#ffd8d8;
+      border-color:rgba(255,107,107,.22);
+    }
+
+    .btn-danger:hover{
+      background:rgba(255,107,107,.16);
+      transform:translateY(-1px);
+    }
+
+    .menu-stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:22px;
+    }
+
+    .stat{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .stat b{
+      display:block;
+      font-size:1.18rem;
+      margin-bottom:4px;
+    }
+
+    .stat span{
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .menu-side{
+      padding:22px;
+      display:grid;
+      gap:16px;
+      align-content:start;
+    }
+
+    .side-card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      padding:16px;
+    }
+
+    .side-card h2,
+    .side-card h3{
+      margin:0 0 10px;
+      font-size:1.18rem;
+      letter-spacing:-.03em;
+    }
+
+    .side-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.68;
+      font-size:.95rem;
+    }
+
+    .difficulty-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .difficulty-card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+      cursor:pointer;
+      transition:.18s ease;
+      text-align:left;
+    }
+
+    .difficulty-card:hover{
+      transform:translateY(-2px);
+      border-color:rgba(71,215,255,.28);
+      background:rgba(71,215,255,.06);
+    }
+
+    .difficulty-card.active{
+      border-color:rgba(71,215,255,.45);
+      background:linear-gradient(180deg, rgba(71,215,255,.10), rgba(155,109,255,.08));
+      box-shadow:inset 0 0 0 1px rgba(71,215,255,.14);
+    }
+
+    .difficulty-card strong{
+      display:block;
+      font-size:1rem;
+      margin-bottom:6px;
+    }
+
+    .difficulty-card span{
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.5;
+      display:block;
+    }
+
+    .start-note{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.6;
+    }
+
+    .loading-wrap{
+      min-height:70vh;
+      display:grid;
+      place-items:center;
+    }
+
+    .loading-card{
+      width:min(560px,100%);
+      padding:32px;
+      text-align:center;
+    }
+
+    .loading-ring{
+      width:78px;
+      height:78px;
+      margin:0 auto 20px;
+      border-radius:50%;
+      border:6px solid rgba(255,255,255,.08);
+      border-top-color:var(--cyan);
+      border-right-color:var(--violet);
+      animation:spin 1s linear infinite;
+      box-shadow:0 0 30px rgba(71,215,255,.10);
+    }
+
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    .loading-card h2{
+      margin:0 0 10px;
+      font-family:var(--title);
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      font-size:2rem;
+    }
+
+    .loading-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .loading-bar{
+      margin-top:22px;
+      height:10px;
+      width:100%;
+      background:rgba(255,255,255,.06);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid var(--line);
+    }
+
+    .loading-fill{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background:linear-gradient(90deg, var(--cyan), var(--violet), var(--pink));
+      transition:width .2s linear;
+    }
+
+    .game-shell{
+      display:grid;
+      grid-template-columns:320px minmax(0,1fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    .sidebar{
+      padding:18px;
+      position:sticky;
+      top:90px;
+    }
+
+    .side-section + .side-section{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid var(--line);
+    }
+
+    .section-kicker{
+      font-family:var(--mono);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .score-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .score-box{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .score-box b{
+      display:block;
+      font-size:1.4rem;
+      margin-bottom:4px;
+    }
+
+    .score-box span{
+      color:var(--muted);
+      font-size:.85rem;
+    }
+
+    .level-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(71,215,255,.08);
+      color:var(--cyan);
+      font-weight:700;
+      font-size:.92rem;
+    }
+
+    .tiny-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .tiny-item{
+      padding:12px 13px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      line-height:1.58;
+      font-size:.92rem;
+    }
+
+    .game-main{
+      padding:20px;
+      min-height:720px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .hud{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+    }
+
+    .hud-box{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    }
+
+    .hud-label{
+      font-family:var(--mono);
+      font-size:11px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .hud-value{
+      font-size:1.38rem;
+      font-weight:800;
+    }
+
+    .time-box .hud-value{
+      color:var(--gold);
+    }
+
+    .timer-bar{
+      height:12px;
+      width:100%;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .timer-fill{
+      height:100%;
+      width:100%;
+      background:linear-gradient(90deg, var(--lime), var(--cyan), var(--violet));
+      transition:width .12s linear, filter .2s ease;
+      box-shadow:0 0 24px rgba(71,215,255,.16);
+    }
+
+    .arena{
+      flex:1;
+      min-height:380px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:
+        radial-gradient(circle at top, rgba(71,215,255,.07), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(155,109,255,.09), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+      text-align:center;
+      padding:24px;
+    }
+
+    .arena::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.06) 36%, transparent 60%);
+      transform:translateX(-150%);
+      transition:transform .8s ease;
+    }
+
+    .arena.flash::before{
+      transform:translateX(150%);
+    }
+
+    .arena.good{
+      box-shadow:inset 0 0 0 1px rgba(156,255,87,.20), 0 0 0 1px rgba(156,255,87,.08);
+    }
+
+    .arena.bad{
+      box-shadow:inset 0 0 0 1px rgba(255,107,107,.22), 0 0 0 1px rgba(255,107,107,.08);
+    }
+
+    .arena-inner{
+      position:relative;
+      z-index:1;
+      max-width:760px;
+      width:100%;
+    }
+
+    .arena-kicker{
+      font-family:var(--mono);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+      margin-bottom:14px;
+    }
+
+    .word-display{
+      font-family:var(--title);
+      font-size:clamp(2.4rem, 7vw, 5rem);
+      line-height:.95;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      margin-bottom:12px;
+      text-shadow:0 0 18px rgba(71,215,255,.12);
+      word-break:break-word;
+    }
+
+    .arena-sub{
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.7;
+      max-width:50ch;
+      margin:0 auto;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .typing-input{
+      flex:1 1 360px;
+      min-width:0;
+      width:100%;
+      padding:18px 18px;
+      border-radius:16px;
+      border:1px solid var(--line-2);
+      outline:none;
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-size:1rem;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+      transition:.16s ease;
+    }
+
+    .typing-input::placeholder{
+      color:#7f95b7;
+    }
+
+    .typing-input:focus{
+      border-color:rgba(71,215,255,.45);
+      box-shadow:0 0 0 5px rgba(71,215,255,.08);
+      background:rgba(255,255,255,.06);
+    }
+
+    .typing-input.good{
+      border-color:rgba(156,255,87,.42);
+      box-shadow:0 0 0 5px rgba(156,255,87,.08);
+    }
+
+    .typing-input.bad{
+      border-color:rgba(255,107,107,.42);
+      box-shadow:0 0 0 5px rgba(255,107,107,.08);
+    }
+
+    .status-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .status{
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.6;
+    }
+
+    .status strong{
+      color:var(--text);
+    }
+
+    .shortcut{
+      font-family:var(--mono);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      color:var(--muted);
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+
+    .shortcut kbd{
+      font-family:var(--mono);
+      font-size:11px;
+      border:1px solid var(--line-2);
+      background:rgba(255,255,255,.05);
+      padding:5px 8px;
+      border-radius:8px;
+      color:var(--text);
+    }
+
+    .footer{
+      padding:8px 0 28px;
+    }
+
+    .footer-card{
+      padding:18px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .footer-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .footer-links{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .footer-links a{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      transition:.18s ease;
+    }
+
+    .footer-links a:hover{
+      color:var(--text);
+      border-color:rgba(71,215,255,.28);
+      background:rgba(71,215,255,.06);
+    }
+
+    @media (max-width: 1020px){
+      .menu-grid,
+      .game-shell{
+        grid-template-columns:1fr;
+      }
+
+      .sidebar{
+        position:static;
+      }
+
+      .hud{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media (max-width: 720px){
+      .wrap{
+        width:min(var(--max), calc(100% - 18px));
+      }
+
+      .topbar-inner{
+        min-height:auto;
+        padding:12px 0;
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .menu-hero,
+      .menu-side,
+      .sidebar,
+      .game-main,
+      .loading-card{
+        padding:18px;
+      }
+
+      .menu-stats,
+      .difficulty-grid,
+      .score-grid,
+      .hud{
+        grid-template-columns:1fr;
+      }
+
+      .menu-actions,
+      .controls{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .btn{
+        width:100%;
+      }
+
+      .status-row{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#top">
+        <div class="brand-mark">KG</div>
+        <div class="brand-copy">
+          <strong>KatGames</strong>
+          <span>TypeSprint</span>
+        </div>
+      </a>
+
+      <div class="top-status">
+        <div class="pill">300+ words</div>
+        <div class="pill">4 difficulties</div>
+        <div class="pill">Solo challenge</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap shell" id="top">
+    <section class="screen active" id="menuScreen">
+      <div class="menu-grid">
+        <div class="panel menu-hero">
+          <div>
+            <div class="eyebrow">KatGames • Typing challenge</div>
+            <h1>TYPE.<br>LOCK IN.<br>WIN.</h1>
+            <p class="subtitle">
+              Pick your level, hit start, and race the clock. Type the words exactly as shown, stack your streak,
+              and chase your best score before the timer runs out.
+            </p>
+
+            <div class="menu-actions">
+              <button class="btn btn-primary" id="openLoadingBtn" type="button">Start Game</button>
+              <button class="btn btn-dark" id="cycleDifficultyBtn" type="button">Change Difficulty</button>
+            </div>
+          </div>
+
+          <div class="menu-stats">
+            <div class="stat">
+              <b>30 sec</b>
+              <span>per round</span>
+            </div>
+            <div class="stat">
+              <b>4 modes</b>
+              <span>easy to extreme</span>
+            </div>
+            <div class="stat">
+              <b>Local best</b>
+              <span>saved automatically</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel menu-side">
+          <div class="side-card">
+            <h2>Select difficulty</h2>
+            <p>Each mode changes the word pool and pace. Easy is short and smooth. Extreme hits with longer words and less room for recovery.</p>
+
+            <div class="difficulty-grid" id="difficultyGrid">
+              <button class="difficulty-card active" type="button" data-level="easy">
+                <strong>Easy</strong>
+                <span>Short, quick words that keep the round moving.</span>
+              </button>
+              <button class="difficulty-card" type="button" data-level="medium">
+                <strong>Medium</strong>
+                <span>Balanced words with a little more variety.</span>
+              </button>
+              <button class="difficulty-card" type="button" data-level="hard">
+                <strong>Hard</strong>
+                <span>Longer words that punish hesitation.</span>
+              </button>
+              <button class="difficulty-card" type="button" data-level="extreme">
+                <strong>Extreme</strong>
+                <span>Maximum pressure with longer, more complex words.</span>
+              </button>
+            </div>
+
+            <p class="start-note" id="menuDifficultyNote">Current selection: <strong>Easy</strong>. Best score for this level loads automatically.</p>
+          </div>
+
+          <div class="side-card">
+            <h3>How to play</h3>
+            <p>When the game starts, a word appears in the arena. Type it exactly as shown. Correct words add to your score and streak. Wrong entries break the streak, but the timer keeps moving.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="loadingScreen">
+      <div class="loading-wrap">
+        <div class="panel loading-card">
+          <div class="loading-ring"></div>
+          <h2>Loading TypeSprint</h2>
+          <p id="loadingText">Syncing word pool and preparing your round...</p>
+          <div class="loading-bar">
+            <div class="loading-fill" id="loadingFill"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="gameScreen">
+      <div class="game-shell">
+        <aside class="panel sidebar">
+          <div class="side-section">
+            <div class="section-kicker">KatGames</div>
+            <div class="level-badge" id="levelBadge">Easy Mode</div>
+          </div>
+
+          <div class="side-section">
+            <div class="section-kicker">Run data</div>
+            <div class="score-grid">
+              <div class="score-box">
+                <b id="bestValue">0</b>
+                <span>Best score</span>
+              </div>
+              <div class="score-box">
+                <b id="wordsPoolCount">0</b>
+                <span>Words in pool</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-section">
+            <div class="section-kicker">Tips</div>
+            <div class="tiny-list">
+              <div class="tiny-item">Use <strong>Enter</strong> for rhythm or just type straight through — both work.</div>
+              <div class="tiny-item">Accuracy matters more than panic. A broken streak costs momentum.</div>
+              <div class="tiny-item">Best score is saved separately for each difficulty.</div>
+            </div>
+          </div>
+
+          <div class="side-section">
+            <div class="section-kicker">Actions</div>
+            <div class="tiny-list">
+              <button class="btn btn-dark" id="backToMenuBtn" type="button">Back to Menu</button>
+              <button class="btn btn-danger" id="quitRoundBtn" type="button">Quit Round</button>
+            </div>
+          </div>
+        </aside>
+
+        <section class="panel game-main">
+          <div class="hud">
+            <div class="hud-box">
+              <div class="hud-label">Score</div>
+              <div class="hud-value" id="scoreValue">0</div>
+            </div>
+            <div class="hud-box">
+              <div class="hud-label">Streak</div>
+              <div class="hud-value" id="streakValue">0</div>
+            </div>
+            <div class="hud-box time-box">
+              <div class="hud-label">Time</div>
+              <div class="hud-value" id="timeValue">30</div>
+            </div>
+            <div class="hud-box">
+              <div class="hud-label">Level</div>
+              <div class="hud-value" id="levelValue">Easy</div>
+            </div>
+            <div class="hud-box">
+              <div class="hud-label">Status</div>
+              <div class="hud-value" id="liveStatusValue">Ready</div>
+            </div>
+          </div>
+
+          <div class="timer-bar" aria-hidden="true">
+            <div class="timer-fill" id="timerFill"></div>
+          </div>
+
+          <div class="arena" id="arena">
+            <div class="arena-inner">
+              <div class="arena-kicker" id="arenaKicker">Round ready</div>
+              <div class="word-display" id="wordDisplay">START</div>
+              <p class="arena-sub" id="arenaSub">Hit Start Round when you are ready. A word will appear and the timer will begin.</p>
+            </div>
+          </div>
+
+          <div class="controls">
+            <input
+              id="typingInput"
+              class="typing-input"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              placeholder="Type the word here..."
+              disabled
+            />
+            <button class="btn btn-primary" id="startRoundBtn" type="button">Start Round</button>
+            <button class="btn btn-dark" id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <div class="status-row">
+            <div class="status" id="statusText"><strong>Waiting.</strong> Start a round to begin.</div>
+            <div class="shortcut">
+              <span>Shortcuts:</span>
+              <kbd>Enter</kbd>
+              <kbd>Type</kbd>
+              <kbd>Repeat</kbd>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="panel footer-card">
+        <p>KatGames — TypeSprint. Fast rounds, clean interface, and 300+ words across four difficulty levels.</p>
+        <div class="footer-links">
+          <a href="#top" id="footerMenuLink">Main Menu</a>
+          <a href="#" id="footerRestartLink">Restart</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const wordPools = {
+      easy: [
+        "ace","act","aim","air","arc","art","ash","ask","awe","axis","bake","beam","beat","blink","block","blue","boost","brand","brave","build","burst","calm","cash","chart","chase","click","climb","cloud","code","craft","dash","data","deal","dream","drift","drive","drop","easy","edit","flash","flow","focus","frame","fresh","game","glow","goal","grit","grow","guide","happy","hype","idea","image","jump","key","kick","laser","launch","level","light","logic","loop","lucky","maker","map","match","mind","mint","move","neon","pace","page","pixel","plan","play","point","power","press","prize","pulse","quick","race","react","ready","rise","run","score","screen","sharp","shift","shine","signal","skill","slide","smart","snap","soft","spark","speed","stack","start","step","style","tap","task","test","track","train","trend","tune","type","user","value","vibe","view","viral","win","wire","word","work","zoom"
+      ],
+      medium: [
+        "action","anchor","arcade","artist","audience","balance","banner","better","binary","border","bounce","browser","button","camera","canvas","capture","center","charge","choice","cipher","circle","client","combo","command","common","cosmic","creator","cursor","custom","design","device","dynamic","effect","energy","engine","escape","export","factor","feature","filter","finish","flight","folder","format","future","galaxy","gaming","gesture","glitch","graphic","growth","header","highlight","impact","insight","isolate","journey","layout","leader","legend","linked","market","medium","memory","metric","modern","module","motion","native","object","output","planet","player","polish","portal","progress","prompt","protect","random","record","render","rocket","runner","scheme","script","scroll","search","select","server","shadow","signal","smooth","social","source","space","starter","stream","studio","switch","target","ticker","timing","toggle","toolbar","travel","update","upload","vector","vision","visual","widget","winner","workflow"
+      ],
+      hard: [
+        "accelerate","adventure","algorithm","amplifier","animation","attention","benchmark","blueprint","calibration","challenge","component","confidence","connector","consistency","dashboard","debugging","direction","discovery","efficient","elevation","engagement","experience","framework","frequency","function","generate","gradient","handcrafted","immersive","improving","injection","interface","iteration","landscape","lightweight","magnetic","messaging","microcopy","navigation","normalize","objective","optimize","organizer","overdrive","performance","playable","precision","predictive","processor","prototype","publisher","qualified","recovery","refinement","resonance","scalable","scenario","sequence","spotlight","stability","statement","structure","subscribe","transition","transport","turbulence","understand","universal","velocity","vibration","visually","workspace"
+      ],
+      extreme: [
+        "accessibility","acceleration","architecture","authentication","brainstorming","collaboration","communication","configuration","consideration","customization","decomposition","differentiation","effectiveness","entrepreneurship","experimentation","functionality","gamification","implementation","improvisation","independently","infrastructure","installation","instrumentation","interactivity","interpretation","investigation","localization","manufacturing","microinteraction","monetization","multiplayer","optimization","personalization","professionalism","productivity","reconciliation","representation","responsibility","sustainability","synchronization","transformative","understanding","visualization"
+      ]
+    };
+
+    const difficultyNotes = {
+      easy: "Easy mode selected. Short words, fast flow, smoother rhythm.",
+      medium: "Medium mode selected. Balanced variety with more pressure.",
+      hard: "Hard mode selected. Longer words with tighter recovery.",
+      extreme: "Extreme mode selected. Long words, high pressure, no mercy."
+    };
+
+    const difficultyOrder = ["easy", "medium", "hard", "extreme"];
+    const ROUND_TIME = 30;
+    const BEST_KEY = "katgames-typesprint-best";
+    const LEVEL_KEY = "katgames-typesprint-level";
+
+    const menuScreen = document.getElementById("menuScreen");
+    const loadingScreen = document.getElementById("loadingScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    const openLoadingBtn = document.getElementById("openLoadingBtn");
+    const cycleDifficultyBtn = document.getElementById("cycleDifficultyBtn");
+    const difficultyGrid = document.getElementById("difficultyGrid");
+    const difficultyButtons = [...document.querySelectorAll(".difficulty-card")];
+    const menuDifficultyNote = document.getElementById("menuDifficultyNote");
+    const loadingFill = document.getElementById("loadingFill");
+    const loadingText = document.getElementById("loadingText");
+
+    const bestValue = document.getElementById("bestValue");
+    const wordsPoolCount = document.getElementById("wordsPoolCount");
+    const levelBadge = document.getElementById("levelBadge");
+    const levelValue = document.getElementById("levelValue");
+    const scoreValue = document.getElementById("scoreValue");
+    const streakValue = document.getElementById("streakValue");
+    const timeValue = document.getElementById("timeValue");
+    const liveStatusValue = document.getElementById("liveStatusValue");
+    const timerFill = document.getElementById("timerFill");
+    const arena = document.getElementById("arena");
+    const arenaKicker = document.getElementById("arenaKicker");
+    const wordDisplay = document.getElementById("wordDisplay");
+    const arenaSub = document.getElementById("arenaSub");
+    const typingInput = document.getElementById("typingInput");
+    const startRoundBtn = document.getElementById("startRoundBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const statusText = document.getElementById("statusText");
+    const backToMenuBtn = document.getElementById("backToMenuBtn");
+    const quitRoundBtn = document.getElementById("quitRoundBtn");
+    const footerMenuLink = document.getElementById("footerMenuLink");
+    const footerRestartLink = document.getElementById("footerRestartLink");
+
+    let currentDifficulty = localStorage.getItem(LEVEL_KEY) || "easy";
+    let bestScore = Number(localStorage.getItem(`${BEST_KEY}-${currentDifficulty}`) || 0);
+    let currentWord = "";
+    let score = 0;
+    let streak = 0;
+    let timeLeft = ROUND_TIME;
+    let timerId = null;
+    let gameRunning = false;
+    let loadingTimer = null;
+
+    function titleCase(value){
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    function activeWords(){
+      return wordPools[currentDifficulty] || wordPools.easy;
+    }
+
+    function randomWord(){
+      const pool = activeWords();
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function updateDifficultyUI(){
+      difficultyButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.level === currentDifficulty);
+      });
+      bestScore = Number(localStorage.getItem(`${BEST_KEY}-${currentDifficulty}`) || 0);
+      bestValue.textContent = bestScore;
+      wordsPoolCount.textContent = activeWords().length;
+      levelBadge.textContent = `${titleCase(currentDifficulty)} Mode`;
+      levelValue.textContent = titleCase(currentDifficulty);
+      menuDifficultyNote.innerHTML = `Current selection: <strong>${titleCase(currentDifficulty)}</strong>. Best score for this level loads automatically.`;
+      cycleDifficultyBtn.textContent = `Difficulty: ${titleCase(currentDifficulty)}`;
+      arenaSub.textContent = difficultyNotes[currentDifficulty];
+    }
+
+    function setDifficulty(level){
+      if (!wordPools[level]) return;
+      currentDifficulty = level;
+      localStorage.setItem(LEVEL_KEY, level);
+      updateDifficultyUI();
+      resetRound();
+    }
+
+    function showScreen(screen){
+      [menuScreen, loadingScreen, gameScreen].forEach(el => el.classList.remove("active"));
+      screen.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function startLoadingSequence(){
+      clearInterval(loadingTimer);
+      showScreen(loadingScreen);
+      let progress = 0;
+      loadingFill.style.width = "0%";
+      const messages = [
+        "Syncing word pool and preparing your round...",
+        "Calibrating difficulty settings...",
+        "Warming up the arena...",
+        "Locking in your typing session..."
+      ];
+      loadingText.textContent = messages[0];
+
+      loadingTimer = setInterval(() => {
+        progress += Math.floor(Math.random() * 18) + 8;
+        if (progress > 100) progress = 100;
+        loadingFill.style.width = progress + "%";
+        loadingText.textContent = messages[Math.min(messages.length - 1, Math.floor(progress / 30))];
+
+        if (progress >= 100) {
+          clearInterval(loadingTimer);
+          setTimeout(() => {
+            showScreen(gameScreen);
+            typingInput.focus();
+          }, 240);
+        }
+      }, 180);
+    }
+
+    function updateHUD(){
+      scoreValue.textContent = score;
+      streakValue.textContent = streak;
+      timeValue.textContent = timeLeft;
+      bestValue.textContent = bestScore;
+      levelValue.textContent = titleCase(currentDifficulty);
+
+      const percent = Math.max(0, (timeLeft / ROUND_TIME) * 100);
+      timerFill.style.width = percent + "%";
+      liveStatusValue.textContent = gameRunning ? "Live" : "Ready";
+
+      if (percent <= 25) {
+        timerFill.style.background = "linear-gradient(90deg, var(--danger), var(--pink))";
+      } else if (percent <= 50) {
+        timerFill.style.background = "linear-gradient(90deg, var(--gold), var(--pink), var(--violet))";
+      } else {
+        timerFill.style.background = "linear-gradient(90deg, var(--lime), var(--cyan), var(--violet))";
+      }
+    }
+
+    function saveBest(){
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem(`${BEST_KEY}-${currentDifficulty}`, String(bestScore));
+        bestValue.textContent = bestScore;
+      }
+    }
+
+    function setNextWord(){
+      let next = randomWord();
+      if (activeWords().length > 1) {
+        while (next === currentWord) next = randomWord();
+      }
+      currentWord = next;
+      wordDisplay.textContent = currentWord;
+      arenaKicker.textContent = `${titleCase(currentDifficulty)} round live`;
+      arenaSub.textContent = "Type the word exactly as shown. Keep the streak alive.";
+      arena.classList.remove("bad", "good");
+      arena.classList.add("flash");
+      setTimeout(() => arena.classList.remove("flash"), 420);
+    }
+
+    function startRound(){
+      clearInterval(timerId);
+      score = 0;
+      streak = 0;
+      timeLeft = ROUND_TIME;
+      gameRunning = true;
+      typingInput.disabled = false;
+      typingInput.value = "";
+      typingInput.classList.remove("good", "bad");
+      startRoundBtn.textContent = "Round Live";
+      startRoundBtn.disabled = true;
+      liveStatusValue.textContent = "Live";
+      statusText.innerHTML = `<strong>${titleCase(currentDifficulty)} round started.</strong> Move fast, stay accurate.`;
+      updateHUD();
+      setNextWord();
+      typingInput.focus();
+
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateHUD();
+        if (timeLeft <= 0) {
+          endRound();
+        }
+      }, 1000);
+    }
+
+    function endRound(){
+      clearInterval(timerId);
+      gameRunning = false;
+      typingInput.disabled = true;
+      typingInput.classList.remove("good", "bad");
+      saveBest();
+      startRoundBtn.textContent = "Start Round";
+      startRoundBtn.disabled = false;
+      liveStatusValue.textContent = "Done";
+      arenaKicker.textContent = "Round complete";
+      wordDisplay.textContent = `Score ${score}`;
+      arenaSub.textContent = score >= bestScore && score > 0
+        ? "New best for this difficulty. Run it back."
+        : `Best score for ${titleCase(currentDifficulty)}: ${bestScore}.`;
+      statusText.innerHTML = `<strong>Finished.</strong> Final score: ${score}. Best score: ${bestScore}.`;
+      arena.classList.remove("good", "bad");
+      updateHUD();
+    }
+
+    function resetRound(){
+      clearInterval(timerId);
+      gameRunning = false;
+      score = 0;
+      streak = 0;
+      timeLeft = ROUND_TIME;
+      currentWord = "";
+      typingInput.disabled = true;
+      typingInput.value = "";
+      typingInput.classList.remove("good", "bad");
+      startRoundBtn.textContent = "Start Round";
+      startRoundBtn.disabled = false;
+      arenaKicker.textContent = "Round ready";
+      wordDisplay.textContent = "START";
+      arenaSub.textContent = difficultyNotes[currentDifficulty];
+      statusText.innerHTML = "<strong>Waiting.</strong> Start a round to begin.";
+      liveStatusValue.textContent = "Ready";
+      arena.classList.remove("good", "bad");
+      updateDifficultyUI();
+      updateHUD();
+    }
+
+    function submitWord(){
+      if (!gameRunning) return;
+      const typed = typingInput.value.trim();
+      if (!typed) return;
+
+      if (typed.toLowerCase() === currentWord.toLowerCase()) {
+        score += 1;
+        streak += 1;
+        typingInput.value = "";
+        typingInput.classList.remove("bad");
+        typingInput.classList.add("good");
+        arena.classList.remove("bad");
+        arena.classList.add("good");
+        statusText.innerHTML = `<strong>Correct.</strong> Streak: ${streak}. Keep going.`;
+        setNextWord();
+      } else {
+        streak = 0;
+        typingInput.classList.remove("good");
+        typingInput.classList.add("bad");
+        arena.classList.remove("good");
+        arena.classList.add("bad");
+        statusText.innerHTML = `<strong>Wrong.</strong> The word was "${currentWord}". Streak reset.`;
+      }
+
+      updateHUD();
+    }
+
+    typingInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        submitWord();
+      }
+    });
+
+    typingInput.addEventListener("input", () => {
+      if (!gameRunning) return;
+      const typed = typingInput.value.trim().toLowerCase();
+      if (!typed) {
+        typingInput.classList.remove("good", "bad");
+        return;
+      }
+
+      if (currentWord.toLowerCase().startsWith(typed)) {
+        typingInput.classList.add("good");
+        typingInput.classList.remove("bad");
+      } else {
+        typingInput.classList.add("bad");
+        typingInput.classList.remove("good");
+      }
+
+      if (typed === currentWord.toLowerCase()) {
+        submitWord();
+      }
+    });
+
+    difficultyButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        setDifficulty(btn.dataset.level);
+      });
+    });
+
+    cycleDifficultyBtn.addEventListener("click", () => {
+      const idx = difficultyOrder.indexOf(currentDifficulty);
+      const next = difficultyOrder[(idx + 1) % difficultyOrder.length];
+      setDifficulty(next);
+    });
+
+    openLoadingBtn.addEventListener("click", startLoadingSequence);
+    startRoundBtn.addEventListener("click", startRound);
+    resetBtn.addEventListener("click", resetRound);
+
+    backToMenuBtn.addEventListener("click", () => {
+      resetRound();
+      showScreen(menuScreen);
+    });
+
+    quitRoundBtn.addEventListener("click", () => {
+      resetRound();
+      showScreen(menuScreen);
+    });
+
+    footerMenuLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      resetRound();
+      showScreen(menuScreen);
+    });
+
+    footerRestartLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (!gameScreen.classList.contains("active")) {
+        startLoadingSequence();
+      } else {
+        resetRound();
+      }
+    });
+
+    updateDifficultyUI();
+    resetRound();
+  </script>
+</body>
+</html>
